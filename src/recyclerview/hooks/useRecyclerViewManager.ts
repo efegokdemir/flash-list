@@ -11,8 +11,10 @@ export const useRecyclerViewManager = <T>(props: RecyclerViewProps<T>) => {
   const [velocityTracker] = useState(() => new VelocityTracker());
 
   const { data } = props;
-  const lastSyncedProps = useRef<RecyclerViewProps<T>>();
-  const lastSyncedData = useRef<RecyclerViewProps<T>["data"]>();
+  const lastSyncedProps = useRef<RecyclerViewProps<T> | undefined>(undefined);
+  const lastSyncedData = useRef<RecyclerViewProps<T>["data"] | undefined>(
+    undefined
+  );
 
   // A render that React discards can still mutate the manager. Track what the
   // manager actually saw so a later render can restore the committed props.
