@@ -1,5 +1,5 @@
-import type { VirtualizedListProps } from "react-native";
+import type { FlatListProps } from "react-native";
 
 export type ViewabilityConfig = NonNullable<
-  VirtualizedListProps<unknown>["viewabilityConfig"]
+  FlatListProps<unknown>["viewabilityConfig"]
 >;
