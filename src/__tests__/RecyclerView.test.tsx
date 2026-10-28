@@ -79,7 +79,7 @@ describe("RecyclerView", () => {
     });
   });
 
-  it("passes the native scroll timestamp to velocity tracking", () => {
+  it("passes the scroll event timestamp to velocity tracking", () => {
     const computeVelocity = jest.spyOn(
       VelocityTracker.prototype,
       "computeVelocity"
@@ -94,8 +94,8 @@ describe("RecyclerView", () => {
     try {
       result.act(() => {
         onScroll({
+          timeStamp: 123,
           nativeEvent: {
-            timestamp: 123,
             contentOffset: { x: 0, y: 10 },
             contentSize: { width: 399, height: 2000 },
             layoutMeasurement: { width: 399, height: 899 },

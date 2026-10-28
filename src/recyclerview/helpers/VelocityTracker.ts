@@ -5,8 +5,8 @@
 export class VelocityTracker<T> {
   /** Timestamp of the last velocity update */
   private lastUpdateTime = Date.now();
-  /** Native scroll timestamp, when the event provides one */
-  private lastNativeTimestamp: number | undefined;
+  /** Synthetic scroll event timestamp, when the event provides one */
+  private lastEventTimestamp: number | undefined;
   /** Current velocity vector with x and y components */
   private velocity = { x: 0, y: 0 };
 
@@ -29,17 +29,17 @@ export class VelocityTracker<T> {
       velocity: { x: number; y: number },
       isMomentumEnd: boolean
     ) => void,
-    nativeEventTimestamp?: number
+    eventTimestamp?: number
   ) {
     // Clear any pending momentum end timeout
     this.cleanUp();
     // Calculate time since last update
     const currentTime = Date.now();
     const nativeInterval =
-      typeof nativeEventTimestamp === "number" &&
-      Number.isFinite(nativeEventTimestamp) &&
-      this.lastNativeTimestamp !== undefined
-        ? nativeEventTimestamp - this.lastNativeTimestamp
+      typeof eventTimestamp === "number" &&
+      Number.isFinite(eventTimestamp) &&
+      this.lastEventTimestamp !== undefined
+        ? eventTimestamp - this.lastEventTimestamp
         : undefined;
     const timeSinceLastUpdate =
       nativeInterval !== undefined && nativeInterval > 0
@@ -59,10 +59,9 @@ export class VelocityTracker<T> {
     //   newVelocity
     // );
     this.lastUpdateTime = currentTime;
-    this.lastNativeTimestamp =
-      typeof nativeEventTimestamp === "number" &&
-      Number.isFinite(nativeEventTimestamp)
-        ? nativeEventTimestamp
+    this.lastEventTimestamp =
+      typeof eventTimestamp === "number" && Number.isFinite(eventTimestamp)
+        ? eventTimestamp
         : undefined;
 
     // Apply velocity to the correct axis
@@ -76,7 +75,7 @@ export class VelocityTracker<T> {
     this.timeoutId = setTimeout(() => {
       this.cleanUp();
       this.lastUpdateTime = Date.now();
-      this.lastNativeTimestamp = undefined;
+      this.lastEventTimestamp = undefined;
       this.velocity.x = 0;
       this.velocity.y = 0;
       callback(this.velocity, true);

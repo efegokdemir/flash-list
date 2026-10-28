@@ -17,7 +17,7 @@ describe("VelocityTracker", () => {
     tracker.cleanUp();
   });
 
-  it("uses native timestamps to preserve sub-frame velocity", () => {
+  it("uses event timestamps to preserve sub-frame velocity", () => {
     jest.useFakeTimers();
     jest.setSystemTime(0);
     const tracker = new VelocityTracker();
@@ -31,7 +31,7 @@ describe("VelocityTracker", () => {
     tracker.cleanUp();
   });
 
-  it("uses the conservative minimum when native timestamps repeat", () => {
+  it("uses the conservative minimum when event timestamps repeat", () => {
     jest.useFakeTimers();
     jest.setSystemTime(0);
     const tracker = new VelocityTracker();

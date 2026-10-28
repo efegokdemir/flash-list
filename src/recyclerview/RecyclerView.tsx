@@ -269,9 +269,7 @@ const RecyclerViewComponent = <T,>(
       let scrollOffset = horizontal
         ? event.nativeEvent.contentOffset.x
         : event.nativeEvent.contentOffset.y;
-      const eventTimestamp = (
-        event.nativeEvent as NativeScrollEvent & { timestamp?: number }
-      ).timestamp;
+      const eventTimestamp = event.timeStamp;
 
       // Handle RTL (Right-to-Left) layout adjustments
       if (isHorizontalRTL) {
