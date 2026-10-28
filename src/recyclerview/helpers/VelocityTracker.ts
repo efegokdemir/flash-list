@@ -5,6 +5,8 @@
 export class VelocityTracker<T> {
   /** Timestamp of the last velocity update */
   private lastUpdateTime = Date.now();
+  /** Native scroll timestamp, when the event provides one */
+  private lastNativeTimestamp: number | undefined;
   /** Current velocity vector with x and y components */
   private velocity = { x: 0, y: 0 };
 
@@ -26,13 +28,23 @@ export class VelocityTracker<T> {
     callback: (
       velocity: { x: number; y: number },
       isMomentumEnd: boolean
-    ) => void
+    ) => void,
+    nativeEventTimestamp?: number
   ) {
     // Clear any pending momentum end timeout
     this.cleanUp();
     // Calculate time since last update
     const currentTime = Date.now();
-    const timeSinceLastUpdate = Math.max(16, currentTime - this.lastUpdateTime);
+    const nativeInterval =
+      typeof nativeEventTimestamp === "number" &&
+      Number.isFinite(nativeEventTimestamp) &&
+      this.lastNativeTimestamp !== undefined
+        ? nativeEventTimestamp - this.lastNativeTimestamp
+        : undefined;
+    const timeSinceLastUpdate =
+      nativeInterval !== undefined && nativeInterval > 0
+        ? nativeInterval
+        : Math.max(16, currentTime - this.lastUpdateTime);
 
     // Calculate velocity as distance/time
     const newVelocity = (newOffset - oldOffset) / timeSinceLastUpdate;
@@ -47,6 +59,11 @@ export class VelocityTracker<T> {
     //   newVelocity
     // );
     this.lastUpdateTime = currentTime;
+    this.lastNativeTimestamp =
+      typeof nativeEventTimestamp === "number" &&
+      Number.isFinite(nativeEventTimestamp)
+        ? nativeEventTimestamp
+        : undefined;
 
     // Apply velocity to the correct axis
     this.velocity.x = isHorizontal ? newVelocity : 0;
@@ -59,6 +76,7 @@ export class VelocityTracker<T> {
     this.timeoutId = setTimeout(() => {
       this.cleanUp();
       this.lastUpdateTime = Date.now();
+      this.lastNativeTimestamp = undefined;
       this.velocity.x = 0;
       this.velocity.y = 0;
       callback(this.velocity, true);
